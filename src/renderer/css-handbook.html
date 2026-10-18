@@ -1,0 +1,18 @@
+<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="Content-Security-Policy" content="default-src 'none';style-src 'unsafe-inline';base-uri 'none';form-action 'none'"><title>Naivi CSS 開發手冊</title><style>body{background:#101012;color:#eee;max-width:800px;margin:60px auto;padding:0 24px;font:15px/1.9 Georgia,'Microsoft JhengHei',sans-serif}h1,h2{font-weight:400}h2{border-top:1px solid #333;padding-top:24px}pre{background:#202024;padding:20px;overflow:auto;font:13px/1.7 Consolas,monospace}code{color:#b9caff}table{border-collapse:collapse;width:100%}td,th{padding:10px;border:1px solid #333;text-align:left}</style>
+<h1>Naivi / CSS 開發手冊</h1><p>0.2.1 · SanGuai Culture Studio · A Cygnus Automation Project</p>
+<h2>套用與復原</h2><p>設定 → 外觀 → 自訂整個應用程式的 CSS → 儲存。最多 20,000 字元，儲存在本機。按 Ctrl + Shift + Backspace 可清除 CSS，即使設定入口被隱藏仍有效。不要遮住確認、取消或錯誤訊息。</p>
+<h2>主題變數</h2><table><tr><th>變數</th><th>用途</th></tr><tr><td>--bg / --text / --muted</td><td>背景、正文、次要文字</td></tr><tr><td>--soft / --solid / --panel / --line</td><td>柔和背景、實色面板、玻璃面板、邊線</td></tr><tr><td>--reading-font / --reading-size / --ui-size</td><td>閱讀字體、閱讀字級、介面字級</td></tr></table><p>部分變數由設定以行內樣式寫入，覆寫時加 !important。強調色使用內建五款選項。</p>
+<pre>:root { --reading-size: 16px !important; }
+html[data-theme="dark"] { --panel: rgba(20,24,32,.8) !important; }
+.message-content { line-height: 1.9; }
+.composer { border-radius: 18px; }</pre>
+<h2>可用選擇器</h2><table><tr><th>選擇器</th><th>內容</th></tr><tr><td>.sidebar / .workflow / .workspace</td><td>左右側欄、中央工作區</td></tr><tr><td>.message-content / .node-markdown</td><td>回答、協作工作摘要</td></tr><tr><td>.composer / #prompt</td><td>輸入面板、輸入框。不要覆寫高度，以保留自動增高</td></tr><tr><td>.md-table / .tip-box / .status-box</td><td>DICK 閱讀元件</td></tr><tr><td>.agent[data-agent="Niv"] .agent-orb</td><td>Niv 協作球</td></tr></table>
+<h2>DICK Markdown</h2><p>支援標題、粗體、斜體、清單、引用、程式區塊、HTTPS 連結及表格。表格容忍模型在每一行之間插入空行。</p><pre>| 項目 | 狀態 |
+| --- | --- |
+| 檢查 | 完成 |</pre>
+<p>沿用 Classic DICK 的安全提示框子集（請寫在單行）：</p><pre>&lt;div class="tip-box"&gt;補充說明。&lt;/div&gt;
+&lt;div class="status-box box-question"&gt;尚待確認的問題。&lt;/div&gt;</pre><p>另有 warning-box、box-topic、box-related、box-done、box-right、box-urgent、box-wrong、box-dispute、box-view。這是經過限制的子集，不代表完整 Classic DICK 互動語法。其他 HTML 會顯示為文字。</p>
+<h2>單篇回答樣式</h2><p>回答的閱讀樣式入口提供隔離預覽。在預覽使用 body、h2、table、blockquote 等選擇器；不會修改全域介面或原始回答。</p>
+<h2>安全與效能</h2><p>CSS 沒有 JavaScript、檔案工具或模型權限。遠端資源、@import 及網路字體受安全政策阻擋。模型可以使用上述閱讀元件，不能修改全域 CSS。CSS 仍可遮蔽介面，請僅使用可信內容。</p><pre>@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}</pre><p>動畫優先使用 transform / opacity，避免多層大型模糊與無限陰影動畫。</p></html>

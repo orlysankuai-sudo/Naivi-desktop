@@ -426,3 +426,20 @@ FodyWeavers.xsd
 
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
+
+# Naivi desktop and private runtime data
+node_modules/
+dist/
+test-results/
+runtime-logs/
+.env
+.env.*
+!.env.example
+*.secret
+*.sqlite*
+*.pem
+*.key
+*.log
+preferences.json
+vault.*
+data/

@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="Content-Security-Policy" content="default-src 'none';style-src 'unsafe-inline';base-uri 'none';form-action 'none'"><title>Naivi · CSS handbook</title><style>body{background:#101012;color:#eee;max-width:820px;margin:60px auto;padding:0 24px;font:15px/1.8 Georgia,serif}h1,h2{font-weight:400}h2{border-top:1px solid #333;padding-top:24px}pre{background:#202024;padding:20px;overflow:auto;font:13px/1.7 Consolas,monospace}code{color:#b9caff}table{border-collapse:collapse;width:100%}td,th{padding:10px;border:1px solid #333;text-align:left}</style>
+<h1>Naivi / CSS handbook</h1><p>Public Beta 4.0 · A Cygnus Automation Project</p>
+<h2>Apply and recover</h2><p>Open Settings → Appearance → Custom application CSS. Save up to 20,000 characters locally. Press <strong>Ctrl + Shift + Backspace</strong> to clear custom CSS if you accidentally hide the interface. Do not hide confirmations, errors or access controls. Use only CSS you trust.</p>
+<h2>Design variables</h2><table><tr><th>Variable</th><th>Purpose</th></tr><tr><td>--bg / --text / --muted</td><td>Background, foreground and secondary text</td></tr><tr><td>--soft / --solid / --panel / --line</td><td>Soft surfaces, solid panels, glass panels and borders</td></tr><tr><td>--reading-font / --reading-size / --ui-size</td><td>Reading typeface, reading size and interface size</td></tr></table><p>Some preferences set inline variables; use !important when overriding them. Accent selection uses five built-in palettes.</p>
+<pre>:root { --reading-size: 16px !important; }
+html[data-theme="dark"] { --panel: rgba(20,24,32,.8) !important; }
+.message-content { line-height: 1.9; }
+.composer { border-radius: 20px; }</pre>
+<h2>Stable hooks</h2><p><code>.sidebar</code>, <code>.workspace</code>, <code>.workflow</code>, <code>.messages</code>, <code>.message-content</code>, <code>.composer</code>, <code>.node-markdown</code>, <code>.agent-orb</code> and <code>.settings-nav</code>. The root exposes <code>data-theme="dark|light"</code> and <code>data-layout="comfortable|focus|wide"</code>. Internal DOM structure may change between releases.</p>
+<h2>DICK Markdown</h2><p>Use headings, tables, fenced code and blockquotes. Supported callout classes include <code>tip-box</code>, <code>warning-box</code>, and <code>status-box box-question</code>, <code>box-topic</code>, <code>box-related</code>, <code>box-done</code>, <code>box-urgent</code>. Scripts, event handlers and arbitrary HTML are rejected.</p>
+<pre>&lt;div class="tip-box"&gt;A short, useful note.&lt;/div&gt;
+
+| Item | Status |
+| --- | --- |
+| Example | Planned |</pre>
+<h2>Accessibility and performance</h2><p>Preserve visible focus and sufficient contrast. Prefer transform and opacity for animation; avoid full-window blur or constant layout animation. Respect reduced motion:</p><pre>@media (prefers-reduced-motion: reduce) {
+  .my-element { animation: none; transition: none; }
+}</pre>
+<h2>Reading preview</h2><p>Per-answer reading CSS runs inside an isolated iframe. It cannot access the network, API keys or desktop tools, and does not rewrite the original answer. Application CSS changes presentation only; it grants no file or model permissions.</p></html>

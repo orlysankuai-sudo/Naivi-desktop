@@ -1,0 +1,5 @@
+// Preserve readers' position across full renders; follow only while at the live edge.
+let observer;
+export function captureViewport(cid){const el=document.querySelector('#messages');return el?.dataset.chat===cid?{top:el.scrollTop,follow:el.dataset.follow!=='false'}:{top:0,follow:true};}
+export function restoreViewport(cid,saved){observer?.disconnect();const el=document.querySelector('#messages');if(!el)return;el.dataset.chat=cid||'';el.dataset.follow=String(saved.follow);const follow=()=>{if(el.dataset.follow==='true')el.scrollTop=el.scrollHeight;};el.scrollTop=saved.follow?el.scrollHeight:saved.top;el.addEventListener('wheel',e=>{if(e.deltaY<0)el.dataset.follow='false';},{passive:true});el.addEventListener('scroll',()=>{el.dataset.follow=String(el.scrollHeight-el.clientHeight-el.scrollTop<64);},{passive:true});observer=new ResizeObserver(follow);for(const child of el.children)observer.observe(child);requestAnimationFrame(follow);}
+export function followOutput(){const el=document.querySelector('#messages');if(el){el.dataset.follow='true';el.scrollTop=el.scrollHeight;}}
