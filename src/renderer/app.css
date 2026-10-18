@@ -50,3 +50,16 @@ html[data-theme=light] .composer,html[data-theme=light] dialog{background:rgba(2
 [data-layout=focus] .message,[data-layout=focus] .composer-area{max-width:720px;margin-inline:auto;width:100%}[data-layout=wide] .message,[data-layout=wide] .composer-area{max-width:1200px;margin-inline:auto;width:100%}.conversation{transition:background .2s,transform .2s}.conversation:hover{transform:translateX(3px)}
 .settings-nav{position:sticky;top:-1px;background:var(--solid);z-index:3;padding-block:12px}.onboard{animation:arrive .45s both}dialog{scrollbar-gutter:stable}.context-actions button:last-child{color:#df9999}
 @media(prefers-reduced-motion:reduce){.onboard,#toast:popover-open{animation:none}.conversation{transition:none}}
+/* The dialog itself never scrolls: its close control remains reachable. */
+#modal{padding:0;overflow:hidden;max-height:88dvh;scrollbar-gutter:auto}
+#modal-body{padding:32px;max-height:88dvh;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-gutter:stable}
+#close-modal{top:12px;right:12px;z-index:12;background:var(--solid);border:1px solid var(--line);border-radius:50%;color:var(--text)}
+#modal-body h2{padding-right:34px}.settings-dialog #modal-body{padding-top:52px}
+.settings-dialog .settings-nav{top:-52px;padding:12px 0;margin-right:0;background:var(--solid)}
+.reading-preview{padding:22px;margin:18px 0 28px;background:var(--soft);border:1px solid var(--line);border-radius:16px}
+.reading-preview .eyebrow{font-size:9px;color:var(--muted)}
+.reading-preview .font-specimen{font-family:var(--preview-font,var(--reading-font))!important;font-size:var(--preview-size,var(--reading-size))!important;line-height:1.85!important;background:none;border:0;padding:0;margin:14px 0}
+.reading-preview .hint{margin-bottom:0}.settings-dialog label{margin-block:22px}
+.settings-save{position:sticky;bottom:-32px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0;margin-top:28px;background:var(--solid);border-top:1px solid var(--line);z-index:4}
+.settings-save span{font-size:10px;color:var(--muted)}.settings-save .primary{margin:0;flex-shrink:0}
+@media(max-width:600px){#modal-body{padding:24px}.settings-save{bottom:-24px;align-items:flex-start}.settings-dialog .settings-nav{top:-52px;flex-wrap:wrap}.settings-save span{max-width:130px}}

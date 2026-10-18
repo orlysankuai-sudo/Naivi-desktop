@@ -21,6 +21,7 @@ Select two to four different models. Single-model role testing is available expl
 
 - Optional sign-in; local guest storage is separate from signed-in profiles.
 - Unlimited-by-Naivi output by default, or a custom per-call token cap. Provider limits still apply. Anthropic requires `max_tokens`: Naivi uses model metadata or the supported capacity you enter, never an arbitrary hidden fallback. Partial output is retained and can be continued.
+- Settings retain a draft across tabs. Reading size and fonts preview immediately; Save applies changes and closing discards the draft.
 - Focused, comfortable and wide reading layouts; black/paper/system themes; five accents and local custom CSS.
 - Collapsible sidebars, growing input, live-edge scrolling and notifications visible above settings.
 - Right-click a recent conversation, or press Shift+F10, to share, rename, export or delete.
