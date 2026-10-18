@@ -1,0 +1,8 @@
+const crypto=require('node:crypto');
+const keyBytes=key=>{if(!/^[a-f0-9]{64}$/.test(key))throw Error('Incorrect KEY.');return Buffer.from(key,'hex');};
+const accessToken=key=>crypto.createHmac('sha256',keyBytes(key)).update('naivi-remote-access-v1').digest('hex');
+const hash=value=>crypto.createHash('sha256').update(value).digest('hex');
+function seal(key,id,value){const iv=crypto.randomBytes(12),cipher=crypto.createCipheriv('aes-256-gcm',keyBytes(key),iv);cipher.setAAD(Buffer.from(id));const data=Buffer.concat([cipher.update(JSON.stringify(value)),cipher.final(),cipher.getAuthTag()]);return {iv:iv.toString('base64'),data:data.toString('base64')};}
+function open(key,id,box){try{const data=Buffer.from(box.data,'base64'),decipher=crypto.createDecipheriv('aes-256-gcm',keyBytes(key),Buffer.from(box.iv,'base64'));decipher.setAAD(Buffer.from(id));decipher.setAuthTag(data.subarray(-16));return JSON.parse(Buffer.concat([decipher.update(data.subarray(0,-16)),decipher.final()]).toString());}catch{throw Error('Incorrect KEY or altered command.');}}
+function verify(task,box,now=Date.now()){if(task.revoked||now>=task.expiresAt)throw Error('Remote task expired or revoked.');const msg=open(task.key,task.id,box);if(typeof msg.id!=='string'||!/^[a-f0-9-]{36}$/.test(msg.id)||msg.taskId!==task.id||!Number.isFinite(msg.created)||Math.abs(now-msg.created)>10*60*1000||typeof msg.prompt!=='string'||!msg.prompt.trim()||msg.prompt.length>12000)throw Error('Invalid or expired command.');if(task.seen.includes(msg.id))throw Error('Command already processed.');return msg;}
+module.exports={accessToken,hash,seal,open,verify};

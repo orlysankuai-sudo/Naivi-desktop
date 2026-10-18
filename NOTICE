@@ -1,0 +1,11 @@
+Naivi Desktop
+Copyright 2026 SanGuai Culture Studio / SanGuai Inc. HK
+A Cygnus Automation Project
+
+Naivi source is licensed under PolyForm Noncommercial License 1.0.0.
+Commercial use requires a separate written license from the studio.
+Studio names, logos and trademarks are not licensed for impersonation.
+
+Electron, Chromium, Node.js and other third-party components retain their
+respective licenses. See the license files in the packaged distribution.
+Inter font: see src/renderer/Inter-LICENSE.txt.

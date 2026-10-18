@@ -1,0 +1,19 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),express=require('express'),fs=require('node:fs'),os=require('node:os'),path=require('node:path'),crypto=require('node:crypto');
+const {mountRemote}=require('../remote'),{RemoteClient}=require('../../src/core/remote-client.cjs'),crypt=require('../../src/core/remote-crypto.cjs');
+test('encrypted remote round trip, local KEY verification, mail recipient, replay, expiry and revocation',async()=>{const dir=fs.mkdtempSync(path.join(os.tmpdir(),'naivi-relay-'));let now=Date.now(),mail=[],executions=0,tasks=[];const app=express();app.use(express.json({limit:'2mb'}));mountRemote(app,{dataDir:dir,now:()=>now,auth:(req,res,next)=>{req.user={email:'qa@example.test'};next();},send:async(...args)=>{mail.push(args);return true;}});const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port;
+ const request=async(route,body,token='')=>{const r=await fetch(base+route,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(body)});const d=await r.json();if(!r.ok)throw Error(d.error);return d;};
+ const client=new RemoteClient({api:request,load:()=>tasks,save:v=>tasks=v,execute:async(_t,p)=>{executions++;return 'Completed '+p;}});
+ try{const t=await client.create({root:null,cid:'test'}),access=crypt.accessToken(t.key),route='/api/naivi/remote/'+t.id;await assert.rejects(()=>request(route+'/view',{},'f'.repeat(64)),/KEY/);const id=crypto.randomUUID(),box=crypt.seal(t.key,t.id,{id,taskId:t.id,created:Date.now(),prompt:'hello'});await request(route+'/commands',{id,box},access);await client.tick();assert.equal(executions,1);const v=await request(route+'/view',{},access);assert.equal(crypt.open(t.key,t.id,v.outputs[0].box).text,'Completed hello');assert.equal(mail.length,1);assert.equal(mail[0][0],'qa@example.test');assert.equal(v.mailStatus,'sent');await assert.rejects(()=>request(route+'/commands',{id,box},access),/already/);await client.tick();assert.equal(executions,1);const persisted=fs.readFileSync(path.join(dir,t.id+'.json'),'utf8');assert(!persisted.includes(t.key));assert(!persisted.includes('Completed hello'));await client.revoke(t.id);await assert.rejects(()=>request(route+'/view',{},access),/expired|revoked/);const expired=await client.create({cid:'expired'});now+=73*3600000;await assert.rejects(()=>request('/api/naivi/remote/'+expired.id+'/view',{},crypt.accessToken(expired.key)),/expired/);
+ }finally{client.stop();await new Promise(r=>server.close(r));fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('valid task polling is isolated behind a shared proxy and each capability remains limited',async()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'naivi-relay-limits-')),app=express();app.use(express.json());mountRemote(app,{dataDir:dir,auth:(req,res,next)=>{req.user={email:'qa@example.test'};next();}});
+ const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port;
+ const request=(route,body,token='')=>fetch(base+'/api/naivi/remote'+route,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(body)});
+ try{const ids=[crypto.randomUUID(),crypto.randomUUID()],token='a'.repeat(64);for(const id of ids)assert.equal((await request('',{id,accessHash:crypt.hash(token),deviceHash:crypt.hash(token)})).status,201);
+ for(let i=0;i<100;i++)assert.equal((await request('/'+ids[i%2]+'/poll',{},token)).status,200);
+ for(let i=0;i<40;i++)assert.equal((await request('/'+ids[0]+'/poll',{},token)).status,200);
+ assert.equal((await request('/'+ids[0]+'/poll',{},token)).status,429);assert.equal((await request('/'+ids[1]+'/poll',{},token)).status,200);
+ }finally{await new Promise(r=>server.close(r));fs.rmSync(dir,{recursive:true,force:true});}
+});
