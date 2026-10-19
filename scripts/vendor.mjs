@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {build} from 'esbuild';
+const out='src/renderer/vendor';fs.mkdirSync(out,{recursive:true});
+for(const name of ['katex.min.js','katex.min.css'])fs.copyFileSync('node_modules/katex/dist/'+name,out+'/'+name);
+fs.cpSync('node_modules/katex/dist/fonts',out+'/fonts',{recursive:true});
+fs.copyFileSync('node_modules/dompurify/dist/purify.min.js',out+'/purify.min.js');
+for(const [pkg,file]of [['katex','LICENSE'],['dompurify','LICENSE'],['highlight.js','LICENSE']])fs.copyFileSync(path.join('node_modules',pkg,file),out+'/'+pkg+'-LICENSE.txt');
+const languages=['javascript','typescript','json','python','xml','bash','css','markdown','sql','cpp','java','rust','yaml','plaintext'];
+await build({stdin:{contents:"import hljs from 'highlight.js/lib/core';\n"+languages.map((name,i)=>`import l${i} from 'highlight.js/lib/languages/${name}';hljs.registerLanguage('${name}',l${i});`).join('\n')+'\nglobalThis.hljs=hljs;',resolveDir:process.cwd()},bundle:true,format:'iife',platform:'browser',minify:true,outfile:out+'/highlight.min.js'});

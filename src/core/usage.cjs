@@ -1,0 +1,2 @@
+function totalUsage(nodes){const reported=nodes.filter(n=>n.usage&&n.usage.reported);return {input:reported.reduce((s,n)=>s+(n.usage.input||0),0),output:reported.reduce((s,n)=>s+(n.usage.output||0),0),cached:reported.reduce((s,n)=>s+(n.usage.cached||0),0),reportedCalls:reported.length,modelCalls:nodes.filter(n=>n.model&&n.model!=='Tavily').length,complete:reported.length>0&&nodes.filter(n=>n.model&&n.model!=='Tavily').every(n=>n.state==='done')&&reported.length===nodes.filter(n=>n.model&&n.model!=='Tavily').length};}
+module.exports={totalUsage};

@@ -9,3 +9,5 @@ Studio names, logos and trademarks are not licensed for impersonation.
 Electron, Chromium, Node.js and other third-party components retain their
 respective licenses. See the license files in the packaged distribution.
 Inter font: see src/renderer/Inter-LICENSE.txt.
+
+KaTeX, Highlight.js and DOMPurify license texts are included in src/renderer/vendor/.

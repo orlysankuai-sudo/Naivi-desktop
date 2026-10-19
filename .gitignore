@@ -443,3 +443,7 @@ runtime-logs/
 preferences.json
 vault.*
 data/
+
+# Required installer source configuration
+!build/
+!build/installer.json
